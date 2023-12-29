@@ -221,14 +221,22 @@ const openNotification = () => {
       console.log("valueToSearch: " + valueToSearch);
     
       try {
-        const { found, operations } = await store.getState().treeObject.searchWithOperations(valueToSearch);
-    
+        const { found, operations, path } = await store.getState().treeObject.searchWithOperations(valueToSearch);
+
+        console.log(path);
         if (found) {
+          console.log("the is path: "+path);
           // Display a modal with the information
           Modal.success({
-            title: 'Node Found',
-            content: `Node with value ${valueToSearch} found. Number of operations: ${operations}`,
-          });
+        title: 'Node Found',
+        content: (
+          <div>
+            <p>{`Node with value ${valueToSearch} found.`}</p>
+            <p>{`Number of operations: ${operations}`}</p>
+            <p>{`Path: ${path.join(' -> ')}`}</p>
+          </div>
+        ),
+      });
     
           setSearchResult(valueToSearch);
           setRoot(getD3Tree(store.getState().treeObject));

@@ -58,34 +58,36 @@ export class BTree<T>{
         return this.root;
     }
 
-    public searchWithOperations(value: T): { found: boolean; operations: number } {
+    public searchWithOperations(value: T): { found: boolean; operations: number; path: T[] } {
         const result = {
-          found: false,
-          operations: 0,
+            found: false,
+            operations: 0,
+            path: [],
         };
-    
+
         this.searchWithOperationsRecursive(this.root, value, result);
-    
+
         return result;
     }
-    
-    private searchWithOperationsRecursive(node: Node<T>, value: T, result: { found: boolean; operations: number }): void {
+
+    private searchWithOperationsRecursive(node: Node<T>, value: T, result: { found: boolean; operations: number; path: T[] }): void {
         let i = 0;
         while (i < node.data.length && node.data[i] < value) {
-          i++;
-          result.operations++;
+            i++;
+            result.operations++;
         }
     
         if (i < node.data.length && node.data[i] === value) {
-          // Value found in the current node
-          result.found = true;
+            // Value found in the current node
+            result.found = true;
+            result.path.unshift(value); // Add the value to the beginning of the path array
         } else if (!node.isLeaf) {
-          // Recursively search in the appropriate child node
-          result.operations++; // Increment the operation count for each recursive call
-          this.searchWithOperationsRecursive(node.children[i], value, result);
+            // Recursively search in the appropriate child node
+            result.operations++; // Increment the operation count for each recursive call
+            this.searchWithOperationsRecursive(node.children[i], value, result);
+            result.path.unshift(...node.data); // Add the current node's data to the beginning of the path
         }
     }
-    
     public toHierarchy(node: Node<T>) {
         const hierarchy = new NodeHierarchy<T>();
         hierarchy.leaves = new LeafHierarchy<T>();
